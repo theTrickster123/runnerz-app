@@ -26,12 +26,15 @@ public class Run {
 
     @Enumerated(EnumType.STRING)
     private Location location;
+    @Version
+    Integer version;
 
     public Run() {
         // Constructeur par défaut pour JPA
     }
 
-    public Run(String title, LocalDateTime startedOn, LocalDateTime completedOn, Integer miles, Location location) {
+
+    public Run(String title, LocalDateTime startedOn, LocalDateTime completedOn, Integer miles, Location location, Integer version) {
         if (!startedOn.isBefore(completedOn)) {
             throw new IllegalArgumentException("Start date must be before end date");
         }
@@ -40,6 +43,7 @@ public class Run {
         this.completedOn = completedOn;
         this.miles = miles;
         this.location = location;
+        this.version = version;
     }
 
     // Getters et Setters
@@ -89,6 +93,13 @@ public class Run {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }
 

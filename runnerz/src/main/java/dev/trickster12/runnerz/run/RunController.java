@@ -37,6 +37,7 @@ public class RunController {
         if(run.isEmpty()){
             throw new RunNotFoundException();
         }
+
         return run.get();
 
     }
@@ -46,37 +47,65 @@ public class RunController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public void create(@Valid @RequestBody Run run){
-        runRepository.create(run);
+        runRepository.save(run);
     }
 
     // put update a run
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Run run, @PathVariable Integer id){
+    public void update(@Valid @RequestBody Run run, @PathVariable Integer id) {
         Optional<Run> existingRun = runRepository.findById(id);
         if (existingRun.isEmpty()) {
             throw new RunNotFoundException();
         }
-        runRepository.update(run, id);
+
+        Run currentRun = existingRun.get();  // Get the existing entity from the database
+
+        // When I wanted to update a run the version was not incremented
+        // so I had to set the version of the run in the request body to the version of the run in the database to avoid the optimistic locking exception
+        // Problem solved with setting the version of the run in the request body to the version of the run in the database
+
+        // Update only the fields that are passed in the request body
+        currentRun.setTitle(run.getTitle());
+        currentRun.setStartedOn(run.getStartedOn());
+        currentRun.setCompletedOn(run.getCompletedOn());
+        currentRun.setMiles(run.getMiles());
+        currentRun.setLocation(run.getLocation());
+
+        // Set the ID and version explicitly, if necessary
+        currentRun.setId(id);  // Just to be sure, set the ID (though it should already be set)
+        currentRun.setVersion(run.getVersion());  // Set the version to maintain consistency for optimistic locking
+
+        // Save the updated entity
+        runRepository.save(currentRun);  // Save the updated entity
     }
 
     // delete delete a run
 
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id){
-        Optional<Run> existingRun = runRepository.findById(id);
-        if (existingRun.isEmpty()) {
-            throw new RunNotFoundException();
+//    @ResponseStatus(HttpStatus.OK)
+//    @DeleteMapping("/{id}")
+//    public void delete(@PathVariable Integer id){
+//        Optional<Run> existingRun = runRepository.findById(id);
+//        if (existingRun.isEmpty()) {
+//            throw new RunNotFoundException();
+//        }
+//        runRepository.delete(existingRun.get());
+//    }
+        @ResponseStatus(HttpStatus.OK)
+        @DeleteMapping("/{id}")
+        public void delete(@PathVariable Integer id){
+            Optional<Run> existingRun = runRepository.findById(id);
+            if (existingRun.isEmpty()) {
+                throw new RunNotFoundException();
+            }
+            runRepository.deleteById(id);
         }
-        runRepository.delete(id);
-    }
 
     // count all runs
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/count")
-    public int count(){
+    public long count(){
         return runRepository.count();
     }
 
@@ -132,25 +161,36 @@ public class RunController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("partial-title/{keyword}")
-    public List<Run> findByPartialTitle(@PathVariable String keyword){
-        List<Run> run = runRepository.findByPartialTitle(keyword);
+    public List<Run> findByPartialTitle(@PathVariable String keyword) {
+        List<Run> runs = runRepository.findByTitleContaining(keyword);  // Appel direct au repository
+        if (runs.isEmpty()) {
+            throw new RunNotFoundException();  // Si aucune course n'est trouvée, on lance une exception
+        }
+        return runs;
+    }
+
+    //fetch runs using a precise pattern : start with a ends with s and have 5 random characters in the middle
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("specific-pattern/version1")
+    public List<Run> findRunByPattern(){
+            List<Run> run = runRepository.findByPattern("a_____s");
+            if(run.isEmpty()){
+                throw new RunNotFoundException();
+            }
+            return run;
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("specific-pattern/version2")
+    public List<Run> findRunByPatternSecondVersion(){
+        List<Run> run = runRepository.findByPattern("s_____a");
         if(run.isEmpty()){
             throw new RunNotFoundException();
         }
         return run;
     }
 
-    //fetch runs using a precise pattern : start with a ends with s and have 5 random characters in the middle
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("specific-pattern")
-    public List<Run> findByPattern(){
-            List<Run> run = runRepository.findByPattern();
-            if(run.isEmpty()){
-                throw new RunNotFoundException();
-            }
-            return run;
-    }
 
 
 
