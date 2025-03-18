@@ -4,8 +4,7 @@ package dev.trickster12.runnerz;
 import dev.trickster12.runnerz.user.User;
 import dev.trickster12.runnerz.user.UserHttpClient;
 import dev.trickster12.runnerz.user.UserRestClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +19,9 @@ import java.util.List;
 @SpringBootApplication
 public class RunnerzApplication {
 
-	private static final Logger log = LoggerFactory.getLogger(RunnerzApplication.class);
+	// can be used for logging purposes (in command line runner)
+	//private static final Logger log = LoggerFactory.getLogger(RunnerzApplication.class);
+
 
 	public static void main(String[] args) {
 
