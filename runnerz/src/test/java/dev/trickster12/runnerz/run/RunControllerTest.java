@@ -83,7 +83,7 @@ public class RunControllerTest {
 
     @Test
     void shouldCreateNewRun() throws Exception { //error
-        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now(),1, Location.INDOOR,0);
+        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now().plus(30,ChronoUnit.HOURS),1, Location.INDOOR,0);
         mvc.perform(MockMvcRequestBuilders.post("/api/runs")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(run))
@@ -93,12 +93,12 @@ public class RunControllerTest {
 
     @Test
     void shouldUpdateRun() throws Exception { //error
-        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now(),1, Location.INDOOR,0);
+        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now().plus(10,ChronoUnit.DAYS),1, Location.INDOOR,0);
         mvc.perform(MockMvcRequestBuilders.put("/api/runs/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(run))
                 )
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -107,3 +107,5 @@ public class RunControllerTest {
                 .andExpect(status().isNoContent());
     }
 }
+
+
