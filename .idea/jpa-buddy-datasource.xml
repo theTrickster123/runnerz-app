@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpbDataSourceConfig">
+    <data-sources>
+      <data-source id="dffd5b61-954d-47da-bee2-6b46b32bfada" name="runnerz" url="jdbc:postgresql://localhost:5432/runnerz" driverClass="org.postgresql.Driver" />
+    </data-sources>
+  </component>
+</project>
