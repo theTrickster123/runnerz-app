@@ -96,14 +96,50 @@ public class RunControllerTest {
     }
 
     @Test
-    void shouldUpdateRun() throws Exception { //error
-        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now().plus(10,ChronoUnit.DAYS),1, Location.INDOOR,0);
+    void shouldUpdateRun() throws Exception {
+        // Create a mock existing Run entity
+        Run existingRun = new Run();
+        existingRun.setId(1);
+        existingRun.setTitle("Old Run");
+        existingRun.setStartedOn(LocalDateTime.parse("2020-01-01T06:00:00"));
+        existingRun.setCompletedOn(LocalDateTime.parse("2020-01-01T07:00:00"));
+        existingRun.setMiles(5);
+        existingRun.setLocation(Location.INDOOR);
+        existingRun.setVersion(0);  // Initial version is 0 for a new Run
+
+        // Create the updated Run object
+        Run updatedRun = new Run();
+        updatedRun.setId(1);
+        updatedRun.setTitle("Morning Run");
+        updatedRun.setStartedOn(LocalDateTime.parse("2020-01-01T06:00:00"));
+        updatedRun.setCompletedOn(LocalDateTime.parse("2020-01-01T07:00:00"));
+        updatedRun.setMiles(6);
+        updatedRun.setLocation(Location.INDOOR);
+        updatedRun.setVersion(1);  // Version will be updated
+
+        // Mock repository methods
+        Mockito.when(runRepository.findById(1)).thenReturn(Optional.of(existingRun));  // Simulate finding the existing Run
+        Mockito.when(runRepository.save(Mockito.any(Run.class))).thenReturn(updatedRun);  // Simulate saving the updated Run
+
+        // Perform PUT request with the updated details
         mvc.perform(MockMvcRequestBuilders.put("/api/runs/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(run))
-                )
-                .andExpect(status().isOk());
+                        .content("{\n" +
+                                "  \"title\": \"Morning Run\",\n" +
+                                "  \"startedOn\": \"2020-01-01T06:00:00\",\n" +
+                                "  \"completedOn\": \"2020-01-01T07:00:00\",\n" +
+                                "  \"miles\": 6,\n" +
+                                "  \"location\": \"INDOOR\",\n" +
+                                "  \"version\": 1\n" +
+                                "}"))
+                .andExpect(status().isOk());  // Expect 200 OK status
+
+        // Verify that save was called exactly once with any Run object
+        Mockito.verify(runRepository, Mockito.times(1)).save(Mockito.any(Run.class));
     }
+
+
+
 
     @Test
     public void shouldDeleteRun() throws Exception {  //error resolved
