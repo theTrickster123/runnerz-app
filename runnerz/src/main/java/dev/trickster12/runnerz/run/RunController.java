@@ -92,7 +92,7 @@ public class RunController {
 //        }
 //        runRepository.delete(existingRun.get());
 //    }
-        @ResponseStatus(HttpStatus.OK)
+        @ResponseStatus(HttpStatus.NO_CONTENT)
         @DeleteMapping("/{id}")
         public void delete(@PathVariable Integer id){
             Optional<Run> existingRun = runRepository.findById(id);

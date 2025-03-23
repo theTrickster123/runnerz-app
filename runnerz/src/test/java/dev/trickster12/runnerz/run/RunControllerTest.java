@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -20,11 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
 public class RunControllerTest {
 
@@ -102,10 +106,31 @@ public class RunControllerTest {
     }
 
     @Test
-    public void shouldDeleteRun() throws Exception {  //error
+    public void shouldDeleteRun() throws Exception {  //error resolved
+        // Mock repository behavior: return a fake Run when findById() is called which will be put in an Optional
+        Run run = new Run();
+        run.setId(1);
+        run.setTitle("Test Run");
+
+        Mockito.when(runRepository.findById(1)).thenReturn(Optional.of(run));  // Simulate found Run : When runRepository.findById(1) is called, return an Optional containing the fake Run
+        Mockito.doNothing().when(runRepository).deleteById(1);  // Simulate successful delete : When runRepository.deleteById(1) is called, do nothing to get the no content status
+
+        // Perform DELETE request
         mvc.perform(MockMvcRequestBuilders.delete("/api/runs/1"))
                 .andExpect(status().isNoContent());
+
+        // Verify that deleteById() was actually called
+        Mockito.verify(runRepository, Mockito.times(1)).deleteById(1); // Verify that runRepository.deleteById(1) was called exactly once
     }
+
+    /*
+        Here's what happens in the mocked execution:
+            runRepository.findById(1) is called → Mockito returns Optional.of(run).
+            Since run exists, runRepository.deleteById(1) is called → Mockito does nothing.
+            The controller returns HTTP 204 No Content.
+            The test checks if the status is 204, so it passes.
+   */
+
 }
 
 
