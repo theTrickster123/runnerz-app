@@ -23,9 +23,11 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @Transactional
@@ -168,6 +170,27 @@ public class RunControllerTest {
             The controller returns HTTP 204 No Content.
             The test checks if the status is 204, so it passes.
    */
+
+    @Test
+    void shouldReturnRunsWhenKeywordExists() throws Exception{
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+
+        Mockito.when(runRepository.findByTitleContaining("Test")).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/partial-title/Test"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("Test Run"));
+
+        Mockito.verify(runRepository).findByTitleContaining("Test");
+
+    }
+
+
 
 }
 
