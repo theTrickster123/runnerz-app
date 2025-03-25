@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Run {
@@ -100,6 +101,24 @@ public class Run {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Run run = (Run) o;
+        return miles == run.miles &&
+                version == run.version &&
+                Objects.equals(title, run.title) &&
+                Objects.equals(startedOn, run.startedOn) &&
+                Objects.equals(completedOn, run.completedOn) &&
+                location == run.location;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, startedOn, completedOn, miles, location, version);
     }
 }
 

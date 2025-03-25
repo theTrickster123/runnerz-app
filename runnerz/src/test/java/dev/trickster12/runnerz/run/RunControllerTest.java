@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -190,6 +191,135 @@ public class RunControllerTest {
 
     }
 
+    @Test
+    void shouldReturnRunsWhenPatternExists() throws Exception{
+        Run run = new Run("a l hds", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+        Mockito.when(runRepository.findByPattern("a_____s")).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/specific-pattern/version1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("a l hds"));
+
+        Mockito.verify(runRepository).findByPattern("a_____s");
+    }
+
+    @Test
+    void shouldReturnRunsWhenSecondPatternExists() throws Exception{
+        Run run = new Run("s l hda", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+        Mockito.when(runRepository.findByPattern("s_____a")).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/specific-pattern/version2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("s l hda"));
+
+        Mockito.verify(runRepository).findByPattern("s_____a");
+    }
+
+    @Test
+    void shouldCountRuns() throws Exception {
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+
+        Mockito.when(runRepository.count()).thenReturn((long) mockRuns.size());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1));
+
+        Mockito.verify(runRepository).count();
+
+    }
+
+    @Test
+    void shouldCreateMultipleRuns() throws Exception{
+
+        Run run1 = new Run("Test Run 1", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run2 = new Run("Test Run 2", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run3 = new Run("Test Run 3", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+
+        List<Run> mockRuns = List.of(run1, run2, run3);
+
+        when(runRepository.saveAll(Mockito.anyList())).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.post("/api/runs/saveAll")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mockRuns)));
+
+        Mockito.verify(runRepository).saveAll(Mockito.argThat(savedRuns ->
+                StreamSupport.stream(savedRuns.spliterator(), false)
+                        .allMatch(savedRun -> mockRuns.stream().anyMatch(mockRun -> mockRun.equals(savedRun))) &&
+                        StreamSupport.stream(savedRuns.spliterator(), false).count() == mockRuns.size()
+        ));
+    }
+
+    @Test
+    void shouldReturnRunsByLocation() throws Exception {
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+
+        Mockito.when(runRepository.findByLocation(Location.INDOOR)).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/location/INDOOR"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("Test Run"));
+
+        Mockito.verify(runRepository).findByLocation(Location.INDOOR);
+
+    }
+
+    @Test
+    void shouldReturnRunsByMiles() throws Exception {
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 7, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+
+        Mockito.when(runRepository.findByMiles(7)).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/miles/7"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("Test Run"));
+
+        Mockito.verify(runRepository).findByMiles(7);
+
+    }
+
+    @Test
+    void shouldReturnRunsByTitle() throws Exception {
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        run.setId(1);  // Manually setting the ID for testing
+
+        List<Run> mockRuns = List.of(run);
+
+        Mockito.when(runRepository.findByTitle("Test%20Run")).thenReturn(mockRuns);
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/runs/title/Test%20Run"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("Test Run"));
+
+        Mockito.verify(runRepository).findByTitle("Test%20Run");
+
+    }
 
 
 }
