@@ -23,8 +23,6 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,7 +89,7 @@ public class RunControllerTest {
     }
 
     @Test
-    void shouldCreateNewRun() throws Exception { //error
+    void shouldCreateNewRun() throws Exception {
         var run = new Run("test", LocalDateTime.now(),LocalDateTime.now().plus(30,ChronoUnit.HOURS),1, Location.INDOOR,0);
         mvc.perform(MockMvcRequestBuilders.post("/api/runs")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -129,14 +127,15 @@ public class RunControllerTest {
         // Perform PUT request with the updated details
         mvc.perform(MockMvcRequestBuilders.put("/api/runs/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "  \"title\": \"Morning Run\",\n" +
-                                "  \"startedOn\": \"2020-01-01T06:00:00\",\n" +
-                                "  \"completedOn\": \"2020-01-01T07:00:00\",\n" +
-                                "  \"miles\": 6,\n" +
-                                "  \"location\": \"INDOOR\",\n" +
-                                "  \"version\": 1\n" +
-                                "}"))
+                        .content("""
+                                {
+                                  "title": "Morning Run",
+                                  "startedOn": "2020-01-01T06:00:00",
+                                  "completedOn": "2020-01-01T07:00:00",
+                                  "miles": 6,
+                                  "location": "INDOOR",
+                                  "version": 1
+                                }"""))
                 .andExpect(status().isOk());  // Expect 200 OK status
 
         // Verify that save was called exactly once with any Run object
