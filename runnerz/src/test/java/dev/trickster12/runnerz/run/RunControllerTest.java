@@ -36,13 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RunControllerTest {
 
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @MockitoBean
-    private RunRepository runRepository; // Mocked repository
+    RunRepository runRepository; // Mocked repository
 
     private final List<Run> runs = new ArrayList<>();
     @BeforeEach
