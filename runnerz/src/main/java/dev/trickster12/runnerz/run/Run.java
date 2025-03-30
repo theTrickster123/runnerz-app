@@ -111,8 +111,8 @@ public class Run {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Run run = (Run) o;
-        return miles == run.miles &&
-                version == run.version &&
+        return Objects.equals(miles, run.miles) &&
+                Objects.equals(version, run.version) &&
                 Objects.equals(title, run.title) &&
                 Objects.equals(startedOn, run.startedOn) &&
                 Objects.equals(completedOn, run.completedOn) &&

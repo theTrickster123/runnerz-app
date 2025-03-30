@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,13 +50,13 @@ public class RunControllerTest {
         runs.add(new Run(
                 "Monday Morning Run",
                 LocalDateTime.now(),
-                LocalDateTime.now().plus(30, ChronoUnit.MINUTES),
+                LocalDateTime.now().plusMinutes(30),
                 3,
                 Location.INDOOR,0));
         runs.add(new Run(
                 "Wednesday Morning Run",
-                LocalDateTime.now().plus(10, ChronoUnit.MINUTES),
-                LocalDateTime.now().plus(30, ChronoUnit.MINUTES),
+                LocalDateTime.now().plusMinutes(10),
+                LocalDateTime.now().plusMinutes(30),
                 3,
                 Location.INDOOR,0));
     }
@@ -90,7 +90,7 @@ public class RunControllerTest {
 
     @Test
     void shouldCreateNewRun() throws Exception {
-        var run = new Run("test", LocalDateTime.now(),LocalDateTime.now().plus(30,ChronoUnit.HOURS),1, Location.INDOOR,0);
+        var run = new Run("test", LocalDateTime.now(), LocalDateTime.now().plusHours(30),1, Location.INDOOR,0);
         mvc.perform(MockMvcRequestBuilders.post("/api/runs")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(run))
@@ -173,7 +173,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsWhenKeywordExists() throws Exception{
-        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -192,7 +192,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsWhenPatternExists() throws Exception{
-        Run run = new Run("a l hds", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("a l hds", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -209,7 +209,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsWhenSecondPatternExists() throws Exception{
-        Run run = new Run("s l hda", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("s l hda", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -226,7 +226,7 @@ public class RunControllerTest {
 
     @Test
     void shouldCountRuns() throws Exception {
-        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -244,9 +244,9 @@ public class RunControllerTest {
     @Test
     void shouldCreateMultipleRuns() throws Exception{
 
-        Run run1 = new Run("Test Run 1", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
-        Run run2 = new Run("Test Run 2", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
-        Run run3 = new Run("Test Run 3", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run1 = new Run("Test Run 1", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
+        Run run2 = new Run("Test Run 2", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
+        Run run3 = new Run("Test Run 3", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
 
         List<Run> mockRuns = List.of(run1, run2, run3);
 
@@ -265,7 +265,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsByLocation() throws Exception {
-        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -284,7 +284,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsByMiles() throws Exception {
-        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 7, Location.INDOOR, 0);
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 7, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);
@@ -303,7 +303,7 @@ public class RunControllerTest {
 
     @Test
     void shouldReturnRunsByTitle() throws Exception {
-        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plus(30, ChronoUnit.HOURS), 1, Location.INDOOR, 0);
+        Run run = new Run("Test Run", LocalDateTime.now(), LocalDateTime.now().plusHours(30), 1, Location.INDOOR, 0);
         run.setId(1);  // Manually setting the ID for testing
 
         List<Run> mockRuns = List.of(run);

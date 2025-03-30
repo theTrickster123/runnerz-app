@@ -1,3 +1,6 @@
+//this class is no longer used, it was replaced by the Jpa repository named RunRepository
+
+/*
 package dev.trickster12.runnerz.run;
 
 import jakarta.validation.Valid;
@@ -14,8 +17,8 @@ import java.util.Optional;
 @Repository
 public class JdbcRunRepository {
 
-    private Logger logger = LoggerFactory.getLogger(JdbcRunRepository.class);
-    private JdbcClient jdbcClient;
+    private final Logger logger = LoggerFactory.getLogger(JdbcRunRepository.class);
+    private final JdbcClient jdbcClient;
 
     public JdbcRunRepository(JdbcClient jdbcClient){
         this.jdbcClient = jdbcClient;
@@ -124,4 +127,4 @@ public class JdbcRunRepository {
                 .list();
     }
 
-}
+}*/

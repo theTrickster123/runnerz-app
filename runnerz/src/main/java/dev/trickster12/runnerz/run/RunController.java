@@ -115,8 +115,7 @@ public class RunController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/saveAll")
     public void saveAll(@RequestBody List<Run> runs){
-        List<Run> finalRunList= runs;
-        runRepository.saveAll(finalRunList);
+        runRepository.saveAll(runs);
 
     }
 
