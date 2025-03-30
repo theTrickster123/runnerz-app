@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "run")
+
 public class Run {
 
     @Id
@@ -20,6 +22,7 @@ public class Run {
 
     private LocalDateTime startedOn;
 
+    @Column(name = "completed_on", nullable = false)
     private LocalDateTime completedOn;
 
     @Positive
